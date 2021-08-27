@@ -3,6 +3,13 @@ xpu = cpu
 plt.style.use("seaborn-paper")
 loaddir = "/home/chris/Documents/conductionblock/data/bikt/set/1/theta/"
 
+PyPlot.rc("font", family="serif")
+PyPlot.rc("text", usetex=true)
+PyPlot.matplotlib.rcParams["axes.titlesize"] = 10
+PyPlot.matplotlib.rcParams["axes.labelsize"] = 10
+PyPlot.matplotlib.rcParams["xtick.labelsize"] = 9
+PyPlot.matplotlib.rcParams["ytick.labelsize"] = 9
+
 crit_dns = []
 for th in 0:18
 	tmp = readdlm("$(loaddir)$(th)/crit_dns")
@@ -41,7 +48,7 @@ plt.figure(figsize=(4,2))
 plt.plot(x[1,1:15], y[1:15], "ok", label="DNS")
 xx = 10.0.^(range(log10(minimum(x[1,1:15])), log10(maximum(x[1,1:15])), length=129))
 yy = collect(transpose(model(collect(transpose(hcat(xx, zeros(length(xx))))))))
-plt.plot(xx, yy, "--C0", label="NN($(length(vcat([ps[n][:] for n=1:length(ps)]...))))")
+plt.plot(xx, yy, "-C0", linewidth=1, label="NN($(length(vcat([ps[n][:] for n=1:length(ps)]...))))")
 
 model |> cpu; x |> cpu; y |> cpu; dl |> cpu;
 BSON.@save "nn_Us.bson" model
@@ -49,7 +56,7 @@ BSON.@save "nn_Us.bson" model
 model2 = RadialBasis([(x[1,n],x[2,n]) for n in 1:size(x,2)], [(y[n]) for n in 1:size(x,2)], [minimum(x[1,:]),minimum(x[2,:])], [maximum(x[1,:]),maximum(x[2,:])])
 
 yy = model2.([(xx[n],0.0) for n in 1:length(xx)])
-plt.plot(xx, yy, "--C1", label="Surrogate")
+plt.plot(xx, yy, "--C1", linewidth=2, label="Surrogate")
 plt.xscale("log"); plt.yscale("symlog")
 plt.legend(loc=0, edgecolor="none")
 plt.title("\$ \\theta = 0 \$")
